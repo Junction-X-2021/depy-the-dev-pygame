@@ -24,7 +24,13 @@ def init_game():
                 sys.exit()
             key_event = pygame.key.get_pressed()
             if current_mode == "menu":
-                draw_menu(screen, font, key_event)
+                selected_menu = draw_menu(screen, font, key_event)
+                if selected_menu:
+                    current_mode = selected_menu
+            elif current_mode == "single":
+                pass
+            elif current_mode == "multi":
+                pass
 
 
 if __name__ == '__main__':
