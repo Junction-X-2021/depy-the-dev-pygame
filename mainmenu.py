@@ -1,12 +1,12 @@
 import pygame.font
 
 
-def draw_menu(screen: pygame.surface, font: pygame.font.Font, key_event, selected_index):
+def draw_menu(screen: pygame.surface, font: pygame.font.Font, key_event, selected_index, res_x, res_y):
     single_player_menu = font.render("Single Play", False, (0, 0, 0))
     multi_player_menu = font.render("Multi Play", False, (0, 0, 0))
 
-    screen.blit(single_player_menu, (240, 300))
-    screen.blit(multi_player_menu, (240, 360))
+    screen.blit(single_player_menu, (res_x*0.375, res_y*0.208))
+    screen.blit(multi_player_menu, (res_x*0.375, res_y*0.25))
     if key_event is None:
         selected_index = 0
     elif key_event and key_event.type == pygame.KEYDOWN:
@@ -19,7 +19,7 @@ def draw_menu(screen: pygame.surface, font: pygame.font.Font, key_event, selecte
                 return "single", selected_index
             else:
                 return "multi", selected_index
-    polygon_y = 300 + selected_index * 60
-    pygame.draw.polygon(screen, (0, 0, 0), [[200, polygon_y], [200, polygon_y+30], [230, polygon_y+15]])
+    polygon_y = res_y*0.208 + selected_index * res_y*0.042
+    pygame.draw.polygon(screen, (0, 0, 0), [[res_x*0.3125, polygon_y], [res_x*0.3125, polygon_y+res_y*0.0208], [res_x*0.359, polygon_y+res_y*0.01042]])
     pygame.display.update()
     return None, selected_index

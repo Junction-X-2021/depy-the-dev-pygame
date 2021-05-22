@@ -10,8 +10,14 @@ player: Developer
 
 
 def single_player_game(screen: pygame.surface, font: pygame.font.Font, key_event,
-                       current_stage, game_init, game_running):
+                       current_stage, game_init, game_running, res_x, res_y):
     global block_list, block_img, player
+
+    def del_block(_block_list):
+        _block_list = _block_list[1:]
+        for idx in range(len(_block_list)):
+            _block_list[idx] = _block_list[idx][0], _block_list[idx][1]-1
+        return _block_list
 
     # 블록 생성
     if not game_running:
@@ -33,14 +39,18 @@ def single_player_game(screen: pygame.surface, font: pygame.font.Font, key_event
 
     # 블록 그리기
     for block_x, block_y in block_list:
-        screen.blit(block_img, [block_x*80, block_y*30+100])
+        screen.blit(block_img, [block_x*res_x*0.125, block_y*res_y*0.05+res_y*0.069])
     # 플레이어 이동
-    if key_event.type == pygame.KEYDOWN and player.y < 30*current_stage - 1:
-        if key_event.key == pygame.K_LEFT and block_list[player.y + 1][0] == player.x - 1:
+    if key_event.type == pygame.KEYDOWN and len(block_list) > 1:
+        if key_event.key == pygame.K_LEFT and block_list[1][0] == player.x - 1:
             player.move_to_left()
-        elif key_event.key == pygame.K_RIGHT and block_list[player.y + 1][0] == player.x + 1:
+            #if 마지막 블럭 위치가 바닥 높이가 아니라면
+            block_list = del_block(block_list)
+        elif key_event.key == pygame.K_RIGHT and block_list[1][0] == player.x + 1:
             player.move_to_right()
-    player.draw(screen)
+            #if 마지막 블럭 위치가 바닥 높이가 아니라면
+            block_list = del_block(block_list)
+    player.draw(screen, res_x, res_y)
     if player.y == 30*current_stage - 1:
         current_stage += 1
         game_running = False
