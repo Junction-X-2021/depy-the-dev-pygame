@@ -41,6 +41,9 @@ def single_player_game(screen: pygame.surface, font: pygame.font.Font, key_event
         elif key_event.key == pygame.K_RIGHT:
             player.move_to_right()
     player.draw(screen)
-    print([player.x * 80 + 8, player.y * 30 + 60])
+    if player.y == 30*current_stage:
+        current_stage += 1
+        game_running = False
+
     pygame.display.update()
     return current_stage, game_init, game_running
