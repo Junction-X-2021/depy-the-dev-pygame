@@ -35,12 +35,15 @@ def single_player_game(screen: pygame.surface, font: pygame.font.Font, key_event
     for block_x, block_y in block_list:
         screen.blit(block_img, [block_x*80, block_y*30+100])
     # 플레이어 이동
-    if key_event.type == pygame.KEYDOWN:
-        if key_event.key == pygame.K_LEFT:
+    if key_event.type == pygame.KEYDOWN and player.y < 30*current_stage - 1:
+        if key_event.key == pygame.K_LEFT and block_list[player.y + 1][0] == player.x - 1:
             player.move_to_left()
-        elif key_event.key == pygame.K_RIGHT:
+        elif key_event.key == pygame.K_RIGHT and block_list[player.y + 1][0] == player.x + 1:
             player.move_to_right()
     player.draw(screen)
-    print([player.x * 80 + 8, player.y * 30 + 60])
+    if player.y == 30*current_stage - 1:
+        current_stage += 1
+        game_running = False
+
     pygame.display.update()
     return current_stage, game_init, game_running

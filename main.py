@@ -8,7 +8,7 @@ from singleplay import single_player_game
 def init_game():
     pygame.init()
     pygame.display.set_caption("depy-the-dev")
-    screen = pygame.display.set_mode((640, 480))
+    screen = pygame.display.set_mode((640, 1440))
 
     # 폰트 불러오기
     pygame.font.init()
