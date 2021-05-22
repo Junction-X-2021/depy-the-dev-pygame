@@ -10,7 +10,7 @@ from singleplay import single_player_game
 root = tk.Tk()
 
 RES_Y = root.winfo_screenheight()
-RES_X = round(RES_Y * 0.44)
+RES_X = round(RES_Y * 0.7)
 
 
 def init_game():

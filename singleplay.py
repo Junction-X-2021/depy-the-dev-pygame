@@ -1,5 +1,6 @@
 import pygame.font
 import random
+from math import log
 
 from player import Player
 
@@ -73,7 +74,7 @@ def single_player_game(screen: pygame.surface, font: pygame.font.Font,
     if player.count == 30 * current_stage - 1:
         current_stage += 1
         game_running = False
-    if elapsed_time != int((pygame.time.get_ticks() - start_tick) / 100) and elapsed_time % 2.5 == 0:
+    if elapsed_time != int((pygame.time.get_ticks() - start_tick) / 100) and elapsed_time % round(1.2/log(current_stage+1)) == 0:
         ai.count += 1
         print(ai.count, player.count)
     elapsed_time = int((pygame.time.get_ticks() - start_tick) / 100)
