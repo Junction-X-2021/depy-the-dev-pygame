@@ -51,7 +51,7 @@ def single_player_game(screen: pygame.surface, font: pygame.font.Font, key_event
             # if 마지막 블럭 위치가 바닥 높이가 아니라면
             block_list = del_block(block_list)
     player.draw(screen, res_x, res_y)
-    if player.y == 30*current_stage - 1:
+    if player.count == 30*current_stage - 1:
         current_stage += 1
         game_running = False
 
