@@ -23,8 +23,8 @@ class Developer:
         self.x -= 1
         self.y += 1
 
-    def draw(self, screen):
-        screen.blit(self.player_image, [self.x * 80 + 8, self.y * 30 + 60])
+    def draw(self, screen, res_x, res_y):
+        screen.blit(self.player_image, [self.x * res_x*0.125 + res_x*0.0125, self.y * res_y*0.0208 + res_y*0.042])
 
 
 class CEO:
