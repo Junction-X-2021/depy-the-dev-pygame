@@ -47,13 +47,14 @@ def init_game():
                 time.sleep(2)
                 continue
             else:
-                current_stage, game_init, game_running, game_stopped = single_player_game(server_socket, screen, font,
+                current_stage, game_init, game_running, game_stopped = single_player_game(screen, font,
                                                     current_stage, game_init, game_running, game_stopped, RES_X, RES_Y)
         
         # 멀티플레이
         elif current_mode == "multi":
-            current_stage, game_running, game_stopped = multi_player_game(server_socket, screen, font,
-                                                current_stage, game_running, game_stopped, RES_X, RES_Y)
+            pass
+            #turn, game_running, game_stopped = multi_player_game(screen, font,
+                                                #turn, game_running, game_stopped, RES_X, RES_Y)
 
 
 if __name__ == '__main__':

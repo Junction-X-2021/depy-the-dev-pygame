@@ -8,8 +8,9 @@ class Player:
         self.x = x
         self.y = y
         self.count = 0
+        self.credit = 0
         self.player_type = player_type
-        if player_type == "developer":
+        if player_type == "player":
             self.player_image = pygame.image.load(f"assets/Idle{random.randint(1, 2)}.png")
         elif player_type == "ceo":
             self.player_image = pygame.image.load(f"assets/cIdle{random.randint(1, 2)}.png")

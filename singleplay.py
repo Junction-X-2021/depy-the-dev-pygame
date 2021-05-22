@@ -21,7 +21,7 @@ selected_index = 0
 score_data: dict
 
 
-def single_player_game(server_socket, screen: pygame.surface, font: pygame.font.Font,
+def single_player_game(screen: pygame.surface, font: pygame.font.Font,
                        current_stage, game_init, game_running, game_stopped, res_x, res_y):
 
     global block_list_all, block_list, block_img, player, ai, start_tick, elapsed_time, score_data
@@ -38,8 +38,8 @@ def single_player_game(server_socket, screen: pygame.surface, font: pygame.font.
 
     # 초기화
     if not game_running and not game_stopped:
-        player = Player(block_list[0][0], block_list[0][1])
-        ai = Player(block_list[0][0], block_list[0][1])
+        player = Player(block_list[0][0], block_list[0][1], "player")
+        ai = Player(block_list[0][0], block_list[0][1], "ceo")
 
         block_list = [(random.randint(0, 7), 0)]
         start_tick = pygame.time.get_ticks()
