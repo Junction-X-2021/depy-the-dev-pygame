@@ -44,11 +44,11 @@ def single_player_game(screen: pygame.surface, font: pygame.font.Font, key_event
     if key_event.type == pygame.KEYDOWN and len(block_list) > 1:
         if key_event.key == pygame.K_LEFT and block_list[1][0] == player.x - 1:
             player.move_to_left()
-            #if 마지막 블럭 위치가 바닥 높이가 아니라면
+            # if 마지막 블럭 위치가 바닥 높이가 아니라면
             block_list = del_block(block_list)
         elif key_event.key == pygame.K_RIGHT and block_list[1][0] == player.x + 1:
             player.move_to_right()
-            #if 마지막 블럭 위치가 바닥 높이가 아니라면
+            # if 마지막 블럭 위치가 바닥 높이가 아니라면
             block_list = del_block(block_list)
     player.draw(screen, res_x, res_y)
     if player.y == 30*current_stage - 1:

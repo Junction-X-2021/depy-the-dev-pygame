@@ -1,15 +1,15 @@
-import sys
 import pygame
 import tkinter as tk
 
 from mainmenu import draw_menu
 from singleplay import single_player_game
 
-#해상도 설정
+# 해상도 설정
 root = tk.Tk()
 
 RES_Y = root.winfo_screenheight()
 RES_X = round(RES_Y * 0.44)
+
 
 def init_game():
     pygame.init()
