@@ -1,3 +1,8 @@
+import json
+import socket
+import sys
+import time
+
 import pygame.font
 import random
 from math import log
@@ -12,17 +17,23 @@ player: Player
 ai: Player
 start_tick: int
 elapsed_time = 0
+selected_index = 0
+score_data: dict
 
 
-def single_player_game(screen: pygame.surface, font: pygame.font.Font,
+def single_player_game(server_socket, screen: pygame.surface, font: pygame.font.Font,
                        current_stage, game_init, game_running, game_stopped, res_x, res_y):
-    global block_list_all, block_list, block_img, player, ai, start_tick, elapsed_time
+    global block_list_all, block_list, block_img, player, ai, start_tick, elapsed_time, score_data
 
     def del_block(_block_list):
         _block_list = _block_list[1:]
         for idx in range(len(_block_list)):
             _block_list[idx] = _block_list[idx][0], _block_list[idx][1] - 1
         return _block_list
+    if game_init:
+        game_running = False
+        current_stage = 1
+        game_init = False
 
     # 블록 생성
     if not game_running and not game_stopped:
@@ -41,9 +52,6 @@ def single_player_game(screen: pygame.surface, font: pygame.font.Font,
             block_list.append((block_x, block_y))
         block_list_all = block_list
         game_running = True
-
-    if game_init:
-        game_init = False
 
     # 블록 그리기
     hide_block_index = 10
@@ -76,7 +84,6 @@ def single_player_game(screen: pygame.surface, font: pygame.font.Font,
         game_running = False
     if elapsed_time != int((pygame.time.get_ticks() - start_tick) / 100) and elapsed_time % round(1.2/log(current_stage+1)) == 0:
         ai.count += 1
-        print(ai.count, player.count)
     elapsed_time = int((pygame.time.get_ticks() - start_tick) / 100)
     timer = font.render(f"timer: {elapsed_time/10}", True, (0, 0, 0))
     screen.blit(timer, (10, 10))
@@ -88,9 +95,78 @@ def single_player_game(screen: pygame.surface, font: pygame.font.Font,
             ai_y = (player.y - player.count + ai.count) * res_y*0.05 + res_y*0.042
             screen.blit(ai.player_image, [ai_x, ai_y])
         if player.count == ai.count:
+            server_socket.send(json.dumps({"hostname": socket.gethostname(), "stage": current_stage}).encode())
+            # 점수 목록 수신
+            while True:
+                try:
+                    score_data = json.loads(server_socket.recv(1024).decode())
+                    break
+                except json.decoder.JSONDecodeError:
+                    continue
             game_stopped = True
     elif elapsed_time == 50:
         ai.count = 0
 
     pygame.display.update()
     return current_stage, game_init, game_running, game_stopped
+
+
+def retry_menu(screen, font, current_stage, res_x, res_y):
+    global selected_index, score_data
+    time.sleep(1)
+    stage = font.render(f"You are caught by your CEO at stage {current_stage}", True, (0, 0, 0))
+    screen.blit(stage, (res_x * 0.33, res_y * 0.33))
+
+    menu_button = font.render("Menu", False, (0, 0, 0))
+    retry_button = font.render("Retry", False, (0, 0, 0))
+    quit_button = font.render("Quit", False, (0, 0, 0))
+
+    screen.blit(menu_button, (res_x*0.45, res_y*0.182))
+    screen.blit(retry_button, (res_x*0.45, res_y*0.208))
+    screen.blit(quit_button, (res_x*0.45, res_y*0.25))
+
+    for key_event in pygame.event.get():
+        if key_event and key_event.type == pygame.KEYDOWN:
+            if key_event.key == pygame.K_UP:
+                selected_index -= 1
+            elif key_event.key == pygame.K_DOWN:
+                selected_index += 1
+            if key_event.key == pygame.K_RETURN:
+                if selected_index == 0:
+                    return "menu"
+                elif selected_index == 1:
+                    return "single"
+                else:
+                    return "exit"
+    polygon_y = res_y*0.182 + selected_index * res_y*0.042
+    pygame.draw.polygon(screen, (0, 0, 0), [[res_x*0.3825, polygon_y], [res_x*0.3825, polygon_y+res_y*0.0208], [res_x*0.425, polygon_y+res_y*0.01042]])
+
+    text_surface = font.render("Ranking", True, (0, 0, 0))
+    rect = text_surface.get_rect(center=(res_x*0.25, res_y*0.5))
+    screen.blit(text_surface, rect)
+    text_surface = font.render("User Name", True, (0, 0, 0))
+    rect = text_surface.get_rect(center=(res_x*0.5, res_y*0.5))
+    screen.blit(text_surface, rect)
+    text_surface = font.render("Stage", True, (0, 0, 0))
+    rect = text_surface.get_rect(center=(res_x*0.75, res_y*0.5))
+    screen.blit(text_surface, rect)
+    score_list = score_data["score"]
+    # create 10 numbers
+    for i in range(len(score_list)):
+        s = str(i + 1)
+        text_surface = font.render(s, True, (0, 0, 0))
+        rect = text_surface.get_rect(center=(res_x*0.25, res_y*0.6 + i * 20))
+        screen.blit(text_surface, rect)
+    for j in range(len(score_list)):
+        # add user name to each ranking
+        text_surface = font.render(score_list[j]["hostname"], True, (0, 0, 0))
+        rect = text_surface.get_rect(center=(res_x*0.5, res_y*0.6 + j * 20))
+        screen.blit(text_surface, rect)
+        # add score to each ranking
+        text_surface = font.render(str(score_list[j]["stage"]), True, (0, 0, 0))
+        rect = text_surface.get_rect(center=(res_x*0.75, res_y*0.6 + j * 20))
+        screen.blit(text_surface, rect)
+    pygame.display.flip()
+
+    pygame.display.update()
+    return None
