@@ -1,3 +1,5 @@
+import time
+
 import pygame
 import tkinter as tk
 
@@ -20,8 +22,7 @@ def init_game():
     pygame.font.init()
     font = pygame.font.SysFont('Comic Sans MS', 30)
     current_mode = "menu"
-    current_stage, game_init, game_running = 1, True, False
-
+    current_stage, game_init, game_running, game_stopped = 1, True, False, False
     while True:
         screen.fill((255, 255, 255))
 
@@ -31,8 +32,13 @@ def init_game():
                 current_mode = selected_menu
                 pygame.display.update()
         elif current_mode == "single":
-            current_stage, game_init, game_running = single_player_game(screen, font, current_stage,
-                                                                        game_init, game_running, RES_X, RES_Y)
+            if game_stopped:
+                time.sleep(1.5)
+                stage = font.render(f"You are caught by your CEO at stage {current_stage}", True, (0, 0, 0))
+                screen.blit(stage, (RES_X*0.05, RES_Y*0.33))
+                pygame.display.update()
+            else:
+                current_stage, game_init, game_running, game_stopped = single_player_game(screen, font, current_stage, game_init, game_running, game_stopped, RES_X, RES_Y)
         elif current_mode == "multi":
             pass
 
