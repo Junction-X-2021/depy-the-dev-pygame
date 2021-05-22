@@ -3,7 +3,7 @@ import random
 
 from player import Developer
 
-block_list = [(random.randint(0, 8), 0)]
+block_list = [(random.randint(0, 7), 0)]
 block_img = pygame.image.load("assets/block.png")
 block_img = pygame.transform.scale(block_img, (80, 60))
 player: Developer
@@ -21,7 +21,7 @@ def single_player_game(screen: pygame.surface, font: pygame.font.Font, key_event
 
     # 블록 생성
     if not game_running:
-        block_list = [(random.randint(0, 8), 0)]
+        block_list = [(random.randint(0, 7), 0)]
         player = Developer(block_list[0][0], block_list[0][1])
         for block_y in range(1, 30*current_stage):
             last_block_x = block_list[-1][0]
@@ -38,18 +38,29 @@ def single_player_game(screen: pygame.surface, font: pygame.font.Font, key_event
         game_init = False
 
     # 블록 그리기
+    hide_block_index = 15
     for block_x, block_y in block_list:
         screen.blit(block_img, [block_x*res_x*0.125, block_y*res_y*0.05+res_y*0.069])
     # 플레이어 이동
     if key_event.type == pygame.KEYDOWN and len(block_list) > 1:
-        if key_event.key == pygame.K_LEFT and block_list[1][0] == player.x - 1:
+        if player.count < hide_block_index:
+            block_index = player.count + 1
+        else:
+            block_index = hide_block_index
+        if key_event.key == pygame.K_LEFT and block_list[block_index][0] == player.x - 1:
             player.move_to_left()
             # if 마지막 블럭 위치가 바닥 높이가 아니라면
-            block_list = del_block(block_list)
-        elif key_event.key == pygame.K_RIGHT and block_list[1][0] == player.x + 1:
+            if player.count >= hide_block_index:
+                block_list = del_block(block_list)
+            else:
+                player.y += 1
+        elif key_event.key == pygame.K_RIGHT and block_list[block_index][0] == player.x + 1:
             player.move_to_right()
             # if 마지막 블럭 위치가 바닥 높이가 아니라면
-            block_list = del_block(block_list)
+            if player.count >= hide_block_index:
+                block_list = del_block(block_list)
+            else:
+                player.y += 1
     player.draw(screen, res_x, res_y)
     if player.count == 30*current_stage - 1:
         current_stage += 1
