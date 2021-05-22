@@ -25,7 +25,7 @@ class Developer:
         self.count += 1
 
     def draw(self, screen, res_x, res_y):
-        screen.blit(self.player_image, [self.x * res_x*0.125 + res_x*0.0125, self.y * res_y*0.0208 + res_y*0.042])
+        screen.blit(self.player_image, [self.x * res_x*0.125 + res_x*0.0125, self.y * res_y*0.05 + res_y*0.042])
 
 
 class CEO:
