@@ -23,6 +23,7 @@ score_data: dict
 
 def single_player_game(server_socket, screen: pygame.surface, font: pygame.font.Font,
                        current_stage, game_init, game_running, game_stopped, res_x, res_y):
+
     global block_list_all, block_list, block_img, player, ai, start_tick, elapsed_time, score_data
 
     def del_block(_block_list):
@@ -35,11 +36,12 @@ def single_player_game(server_socket, screen: pygame.surface, font: pygame.font.
         current_stage = 1
         game_init = False
 
-    # 블록 생성
+    # 초기화
     if not game_running and not game_stopped:
-        block_list = [(random.randint(0, 7), 0)]
         player = Player(block_list[0][0], block_list[0][1])
         ai = Player(block_list[0][0], block_list[0][1])
+
+        block_list = [(random.randint(0, 7), 0)]
         start_tick = pygame.time.get_ticks()
         for block_y in range(1, 30 * current_stage):
             last_block_x = block_list[-1][0]
@@ -55,15 +57,19 @@ def single_player_game(server_socket, screen: pygame.surface, font: pygame.font.
 
     # 블록 그리기
     hide_block_index = 10
+
     for block_x, block_y in block_list:
         screen.blit(block_img, [block_x * res_x * 0.125, block_y * res_y * 0.05 + res_y * 0.069])
+
     for key_event in pygame.event.get():
+
         # 플레이어 이동
         if key_event.type == pygame.KEYDOWN and len(block_list) > 1:
             if player.count < hide_block_index:
                 block_index = player.count + 1
             else:
                 block_index = hide_block_index
+
             if key_event.key == pygame.K_LEFT and block_list[block_index][0] == player.x - 1:
                 player.move_to_left()
                 # if 마지막 블럭 위치가 바닥 높이가 아니라면
@@ -71,6 +77,7 @@ def single_player_game(server_socket, screen: pygame.surface, font: pygame.font.
                     block_list = del_block(block_list)
                 else:
                     player.y += 1
+
             elif key_event.key == pygame.K_RIGHT and block_list[block_index][0] == player.x + 1:
                 player.move_to_right()
                 # if 마지막 블럭 위치가 바닥 높이가 아니라면
@@ -79,9 +86,11 @@ def single_player_game(server_socket, screen: pygame.surface, font: pygame.font.
                 else:
                     player.y += 1
     player.draw(screen, res_x, res_y)
+
     if player.count == 30 * current_stage - 1:
         current_stage += 1
         game_running = False
+
     if elapsed_time != int((pygame.time.get_ticks() - start_tick) / 100) and elapsed_time % round(1.2/log(current_stage+1)) == 0:
         ai.count += 1
     elapsed_time = int((pygame.time.get_ticks() - start_tick) / 100)
@@ -89,13 +98,16 @@ def single_player_game(server_socket, screen: pygame.surface, font: pygame.font.
     screen.blit(timer, (10, 10))
     stage = font.render(f"stage: {current_stage}", True, (0, 0, 0))
     screen.blit(stage, (10, 50))
+
     if elapsed_time > 50:
         if player.count - ai.count < hide_block_index:
             ai_x = block_list_all[ai.count][0] * res_x*0.125 + res_x*0.0125
             ai_y = (player.y - player.count + ai.count) * res_y*0.05 + res_y*0.042
             screen.blit(ai.player_image, [ai_x, ai_y])
+
         if player.count == ai.count:
             server_socket.send(json.dumps({"hostname": socket.gethostname(), "stage": current_stage}).encode())
+
             # 점수 목록 수신
             while True:
                 try:
@@ -104,6 +116,7 @@ def single_player_game(server_socket, screen: pygame.surface, font: pygame.font.
                 except json.decoder.JSONDecodeError:
                     continue
             game_stopped = True
+
     elif elapsed_time == 50:
         ai.count = 0
 
@@ -139,18 +152,21 @@ def retry_menu(screen, font, current_stage, res_x, res_y):
                 else:
                     return "exit"
     polygon_y = res_y*0.182 + selected_index * res_y*0.042
-    pygame.draw.polygon(screen, (0, 0, 0), [[res_x*0.3825, polygon_y], [res_x*0.3825, polygon_y+res_y*0.0208], [res_x*0.425, polygon_y+res_y*0.01042]])
+    pygame.draw.polygon(screen, (0, 0, 0), [[res_x*0.3825, polygon_y],[res_x*0.3825, polygon_y+res_y*0.0208],[res_x*0.425, polygon_y+res_y*0.01042]])
 
     text_surface = font.render("Ranking", True, (0, 0, 0))
     rect = text_surface.get_rect(center=(res_x*0.25, res_y*0.5))
     screen.blit(text_surface, rect)
+
     text_surface = font.render("User Name", True, (0, 0, 0))
     rect = text_surface.get_rect(center=(res_x*0.5, res_y*0.5))
     screen.blit(text_surface, rect)
+
     text_surface = font.render("Stage", True, (0, 0, 0))
     rect = text_surface.get_rect(center=(res_x*0.75, res_y*0.5))
     screen.blit(text_surface, rect)
     score_list = score_data["score"]
+    
     # create 10 numbers
     for i in range(len(score_list)):
         s = str(i + 1)

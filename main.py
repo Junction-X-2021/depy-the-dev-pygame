@@ -5,6 +5,8 @@ import tkinter as tk
 
 from mainmenu import draw_menu
 from singleplay import single_player_game
+from common import *
+from multiplay import multi_player_game
 
 # 해상도 설정
 root = tk.Tk()
@@ -21,16 +23,20 @@ def init_game():
     # 폰트 불러오기
     pygame.font.init()
     font = pygame.font.SysFont('Comic Sans MS', 30)
+
     current_mode = "menu"
     current_stage, game_init, game_running, game_stopped = 1, True, False, False
+
     while True:
         screen.fill((255, 255, 255))
-
+        # 메뉴
         if current_mode == "menu":
             selected_menu, selected_index = draw_menu(screen, font, RES_X, RES_Y)
             if selected_menu:
                 current_mode = selected_menu
                 pygame.display.update()
+
+        # 싱글플레이
         elif current_mode == "single":
             if game_stopped:
                 time.sleep(1.5)
@@ -41,9 +47,13 @@ def init_game():
                 time.sleep(2)
                 continue
             else:
-                current_stage, game_init, game_running, game_stopped = single_player_game(screen, font, current_stage, game_init, game_running, game_stopped, RES_X, RES_Y)
+                current_stage, game_init, game_running, game_stopped = single_player_game(server_socket, screen, font,
+                                                    current_stage, game_init, game_running, game_stopped, RES_X, RES_Y)
+        
+        # 멀티플레이
         elif current_mode == "multi":
-            pass
+            current_stage, game_running, game_stopped = multi_player_game(server_socket, screen, font,
+                                                current_stage, game_running, game_stopped, RES_X, RES_Y)
 
 
 if __name__ == '__main__':
