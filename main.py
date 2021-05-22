@@ -37,6 +37,9 @@ def init_game():
                 stage = font.render(f"You are caught by your CEO at stage {current_stage}", True, (0, 0, 0))
                 screen.blit(stage, (RES_X*0.05, RES_Y*0.33))
                 pygame.display.update()
+                current_mode = "menu"
+                time.sleep(2)
+                continue
             else:
                 current_stage, game_init, game_running, game_stopped = single_player_game(screen, font, current_stage, game_init, game_running, game_stopped, RES_X, RES_Y)
         elif current_mode == "multi":
