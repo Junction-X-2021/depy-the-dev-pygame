@@ -3,7 +3,7 @@ import random
 import pygame.image
 
 
-class Developer:
+class Player:
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -28,5 +28,3 @@ class Developer:
         screen.blit(self.player_image, [self.x * res_x*0.125 + res_x*0.0125, self.y * res_y*0.05 + res_y*0.042])
 
 
-class CEO:
-    pass
