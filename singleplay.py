@@ -38,9 +38,6 @@ def single_player_game(screen: pygame.surface, font: pygame.font.Font,
 
     # 초기화
     if not game_running and not game_stopped:
-        player = Player(block_list[0][0], block_list[0][1], "player")
-        ai = Player(block_list[0][0], block_list[0][1], "ceo")
-
         block_list = [(random.randint(0, 7), 0)]
         start_tick = pygame.time.get_ticks()
         for block_y in range(1, 30 * current_stage):
@@ -54,6 +51,9 @@ def single_player_game(screen: pygame.surface, font: pygame.font.Font,
             block_list.append((block_x, block_y))
         block_list_all = block_list
         game_running = True
+
+        player = Player(block_list[0][0], block_list[0][1], "player")
+        ai = Player(block_list[0][0], block_list[0][1], "ceo")
 
     # 블록 그리기
     hide_block_index = 10
