@@ -38,8 +38,8 @@ def single_player_game(server_socket, screen: pygame.surface, font: pygame.font.
     # 블록 생성
     if not game_running and not game_stopped:
         block_list = [(random.randint(0, 7), 0)]
-        player = Player(block_list[0][0], block_list[0][1])
-        ai = Player(block_list[0][0], block_list[0][1])
+        player = Player(block_list[0][0], block_list[0][1], "player")
+        ai = Player(block_list[0][0], block_list[0][1], "ceo")
         start_tick = pygame.time.get_ticks()
         for block_y in range(1, 30 * current_stage):
             last_block_x = block_list[-1][0]
