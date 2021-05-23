@@ -144,4 +144,5 @@ def retry_menu(screen, font, current_stage, res_x, res_y):
         screen.blit(text_surface, rect)
     pygame.display.flip()
     pygame.display.update()
+    time.sleep(5)
     return "menu"
