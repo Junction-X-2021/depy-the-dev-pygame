@@ -3,3 +3,4 @@ venv/
 
 # Python cache
 *.pyc
+.DS_Store

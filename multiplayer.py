@@ -10,19 +10,46 @@ from math import log
 
 from player import Player
 
-block_list = [(random.randint(0, 7), 0)]
-block_list_all = []
+
 block_img = pygame.image.load("assets/block.png")
 block_img = pygame.transform.scale(block_img, (80, 60))
-player: Player
-ai: Player
-start_tick: int
-elapsed_time = 0
-score_list: list
+room_name = ""
+last_room_name = ""
+playing_time = 0
+start_tick = pygame.time.get_ticks()
 
 
-def single_player_game(server_socket, screen: pygame.surface, font: pygame.font.Font,
-                       current_stage, game_init, game_running, game_stopped, res_x, res_y):
+def multi_player_init(server_socket, screen, font, res_x, res_y):
+    global room_name, last_room_name, playing_time
+    for key_event in pygame.event.get():
+        if key_event.type == pygame.KEYDOWN:
+            if str(key_event.unicode).isdigit():
+                room_name += key_event.unicode
+            elif key_event.key == pygame.K_BACKSPACE:
+                room_name = room_name[:-1]
+            elif key_event.key == pygame.K_RETURN:
+                last_room_name = room_name
+    text_surface = font.render(room_name, True, (0, 0, 0))
+    rect = text_surface.get_rect(center=(res_x*0.5, res_y*0.25))
+    screen.blit(text_surface, rect)
+    text_surface = font.render("Room ID : ", True, (0, 0, 0))
+    rect = text_surface.get_rect(center=(res_x*0.33, res_y*0.25))
+    screen.blit(text_surface, rect)
+    pygame.display.flip()
+    server_socket.send(pickle.dumps({"room_id": room_name, "last": last_room_name}))
+    if playing_time != int((pygame.time.get_ticks() - start_tick) / 1000) and str(room_name).strip():
+        playing_time = int((pygame.time.get_ticks() - start_tick) / 1000)
+        while True:
+            try:
+                status = pickle.loads(server_socket.recv(1024))
+                print(status)
+                break
+            except json.decoder.JSONDecodeError:
+                continue
+    return True
+
+
+def multi_player_game(server_socket, screen: pygame.surface, font: pygame.font.Font, game_init, game_running, game_stopped, res_x, res_y):
     global block_list_all, block_list, block_img, player, ai, start_tick, elapsed_time, score_list
 
     def del_block(_block_list):
@@ -131,17 +158,18 @@ def retry_menu(screen, font, current_stage, res_x, res_y):
     for i in range(len(score_list)):
         s = str(i + 1)
         text_surface = font.render(s, True, (0, 0, 0))
-        rect = text_surface.get_rect(center=(res_x*0.25, res_y*0.6 + i * 50))
+        rect = text_surface.get_rect(center=(res_x*0.25, res_y*0.6 + i * 20))
         screen.blit(text_surface, rect)
     for j in range(len(score_list)):
         # add user name to each ranking
         text_surface = font.render(score_list[j]["hostname"], True, (0, 0, 0))
-        rect = text_surface.get_rect(center=(res_x*0.5, res_y*0.6 + j * 50))
+        rect = text_surface.get_rect(center=(res_x*0.5, res_y*0.6 + j * 20))
         screen.blit(text_surface, rect)
         # add score to each ranking
         text_surface = font.render(str(score_list[j]["stage"]), True, (0, 0, 0))
-        rect = text_surface.get_rect(center=(res_x*0.75, res_y*0.6 + j * 50))
+        rect = text_surface.get_rect(center=(res_x*0.75, res_y*0.6 + j * 20))
         screen.blit(text_surface, rect)
     pygame.display.flip()
     pygame.display.update()
+    time.sleep(1)
     return "menu"
